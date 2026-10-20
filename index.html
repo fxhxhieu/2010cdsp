@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gia đình Sư Phạm · 20/10</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Dancing+Script:wght@600;700&family=Be+Vietnam+Pro:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts/fonts.css">
 <style>
   :root{--gold:#ffd98a}
   *{margin:0;padding:0;box-sizing:border-box}
@@ -44,6 +44,11 @@
   #cStage{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at 50% 52%,#ffe9b055,transparent 62%)}
   #cText{position:absolute;inset:0;gap:20px}
   #cText h1{font-size:250px;line-height:1}
+  #cH1{min-height:1.05em}
+  .lt2{display:inline-block;animation:letterIn .95s cubic-bezier(.2,1.8,.4,1) both}
+  @keyframes letterIn{from{opacity:0;transform:translateY(170px) scale(.2) rotate(-40deg)}to{opacity:1;transform:none}}
+  #fxc{position:absolute;inset:0;z-index:43;pointer-events:none}
+  #bigflash{position:absolute;inset:0;background:#fff;opacity:0;z-index:42;pointer-events:none}
   #cText p{font-size:50px;color:#ffe9bd;max-width:1400px;line-height:1.4;font-style:italic}
   .cur{position:absolute;top:0;bottom:0;width:1000px;
     background:linear-gradient(180deg,rgba(0,0,0,.4),transparent 20%,transparent 78%,rgba(0,0,0,.5)),
@@ -89,7 +94,7 @@
   @keyframes hup{to{transform:translate(var(--dx),-700px) scale(1.4) rotate(var(--r));opacity:0}}
   .peek{position:absolute;bottom:0;transform:translate(-50%,125%);transition:transform .9s cubic-bezier(.2,1.4,.4,1);display:flex;flex-direction:column;align-items:center}
   .peek.in{transform:translate(-50%,0)}
-  .peek .bub{position:relative;transform:none;opacity:1;margin-bottom:14px;font-size:36px}
+  .peek .bub{position:relative;transform:none;opacity:1;margin-bottom:14px;font-size:34px;white-space:normal;max-width:300px;text-align:center;line-height:1.2;padding:12px 22px}
   .peek img{width:260px;height:260px;margin-bottom:-60px;filter:drop-shadow(0 0 24px #ffb34788)}
 
   /* máy quét */
@@ -103,7 +108,7 @@
   .chip:hover{background:#ffd98a;color:#3a1d4d;transform:scale(1.08)}
   .chip.done{opacity:.45;border-color:#fff5;cursor:default}
   .chip.done:hover{background:#ffffff14;color:#fff;transform:none}
-  .chip.done::before{content:'🌸 '}
+  .ci{width:36px;height:36px;border-radius:50%;vertical-align:middle;margin:-8px 12px -8px -16px;border:2px solid #fff;object-fit:cover}
   #addRow{position:absolute;top:570px;width:100%;display:flex;gap:20px;justify-content:center;align-items:center}
   #nameIn{font:400 32px 'Be Vietnam Pro',sans-serif;padding:14px 30px;width:620px;border-radius:50px;border:2px solid #ffd98a88;background:#ffffff18;color:#fff;outline:none}
   #nameIn::placeholder{color:#fff9}
@@ -136,6 +141,9 @@
   #resCard .tag{font-size:40px;color:#cfe0ff;letter-spacing:.2em;text-transform:uppercase}
   #resName{font-size:130px;line-height:1.1;margin:6px 0 4px}
   #resSp{font-size:58px;font-weight:700;color:#ffd98a}
+  #resSp .bi{width:78px;height:78px;margin:-14px 18px -14px 0}
+  .cph{width:300px;height:300px;filter:drop-shadow(0 0 30px #ffb34788)}
+  #dreamBtn .bi{width:56px;height:56px;margin:-14px 14px -14px -22px}
   #resTrait{font-size:38px;font-style:italic;color:#e8defa;margin-top:6px;line-height:1.4}
   #resWish{margin-top:36px;background:#fff8ec;color:#4a2a3a;border-radius:26px;padding:30px 42px;font-size:41px;font-style:italic;line-height:1.45;
     box-shadow:0 20px 60px #0007;border:3px solid #ffd98a}
@@ -200,7 +208,7 @@
     <div id="cStage"></div>
     <div id="cText" class="col">
       <div class="eyebrow">20 · 10</div>
-      <h1 class="script gold">Gia đình Sư Phạm</h1>
+      <h1 class="script" id="cH1"></h1>
       <p class="serif">Team nam xin phép làm phiền các chị em trong ít phút…</p>
     </div>
     <div class="cur" id="curL"></div><div class="cur" id="curR"></div>
@@ -247,7 +255,7 @@
       <div id="scanTitle" class="serif">Đang quét: <b class="gold" id="scanName"></b></div>
       <div id="camBox">
         <video id="cam" autoplay playsinline muted></video>
-        <div id="camPH">🙂</div>
+        <div id="camPH"></div>
         <div class="laser"></div>
         <div class="corner c1"></div><div class="corner c2"></div><div class="corner c3"></div><div class="corner c4"></div>
       </div>
@@ -303,14 +311,16 @@
     <h1 class="script">Vườn hoa của Gia đình Sư Phạm</h1>
   </section>
   <div class="bub" id="dreamBub"></div>
-  <button id="dreamBtn">🌸 Vườn hoa mơ mộng (B)</button>
+  <button id="dreamBtn">Vườn hoa mơ mộng (B)</button>
 
+  <canvas id="fxc" width="1920" height="1080"></canvas>
+  <div id="bigflash"></div>
   <div id="cursor"><svg viewBox="0 0 28 42"><path d="M2 2 L2 34 L10 27 L16 40 L22 37 L16 25 L26 25 Z" fill="#fff" stroke="#222" stroke-width="2.4" stroke-linejoin="round"/></svg></div>
 </div>
 <audio id="music" src="music.mp3" loop></audio>
 <div id="toast"></div>
 <div id="warn">Ảnh chưa hiện: hãy mở trang bằng start.bat (cần chạy qua localhost, không mở trực tiếp file).</div>
-<div id="ctl">Space: tạm dừng · F: toàn màn hình · N: bỏ qua cảnh · E: kết thúc quét · B: vườn hoa · C: đổi camera · M: tắt tiếng · +/−: âm lượng</div>
+<div id="ctl">Space: tạm dừng · F: toàn màn hình · N: bỏ qua cảnh · E: kết thúc quét · B: vườn hoa · Q: chất lượng · C: đổi camera · M: tắt tiếng · +/−: âm lượng</div>
 
 <script>
 /* ================= CHỈNH Ở ĐÂY ================= */
@@ -411,6 +421,7 @@ function toast(msg){
 }
 
 /* ---------- âm thanh: nhạc nền + hiệu ứng, tạo ngay trong trình duyệt ---------- */
+const MV=.7;
 let ac=null,master,comp,verbSend,musicBus,sfxBus,noiseBuf,musicFile=false,volume=.85,muted=false;
 function initAudio(){
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
@@ -421,7 +432,7 @@ function initAudio(){
   const len=ac.sampleRate*2.4,imp=ac.createBuffer(2,len,ac.sampleRate);
   for(let c=0;c<2;c++){const d=imp.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6)}
   const verb=ac.createConvolver();verb.buffer=imp;verbSend=ac.createGain();verbSend.gain.value=.3;verbSend.connect(verb);verb.connect(master);
-  musicBus=ac.createGain();musicBus.gain.value=.55;musicBus.connect(master);musicBus.connect(verbSend);
+  musicBus=ac.createGain();musicBus.gain.value=MV;musicBus.connect(master);musicBus.connect(verbSend);
   sfxBus=ac.createGain();sfxBus.gain.value=.9;sfxBus.connect(master);sfxBus.connect(verbSend);
   noiseBuf=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate);
   const nd=noiseBuf.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
@@ -453,7 +464,7 @@ function bell(f,t,dur,vol,dest=sfxBus){
 function duck(depth=.4,ms=600){
   if(!ac||musicFile)return;
   const t=T0(),g=musicBus.gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);
-  g.linearRampToValueAtTime(.55*depth,t+.05);g.linearRampToValueAtTime(.55,t+ms/1000+.4);
+  g.linearRampToValueAtTime(MV*depth,t+.05);g.linearRampToValueAtTime(MV,t+ms/1000+.4);
 }
 const PENT=[0,2,4,7,9],midi=n=>440*Math.pow(2,(n-69)/12);
 let lastBoom=0;
@@ -505,6 +516,7 @@ const sfx={
   whistle(){osc('sine',700,T0(),.7,.05,{f2:2300,a:.1})},
   boom(pan=0,big=1){const t=T0();noise(t,.7,.4*big,{type:'lowpass',f:520,f2:90,q:.6,a:.004,pan});osc('sine',95,t,.5,.4*big,{f2:34,pan});noise(t+.05,.5,.07*big,{type:'highpass',f:4500,a:.01,pan})},
   crackle(pan=0){const t=T0();for(let i=0;i<10;i++)noise(t+.25+Math.random()*.7,.02,.12,{type:'highpass',f:3500+Math.random()*3000,a:.001,pan})},
+  cannon(){const t=T0();noise(t,.3,.5,{type:'lowpass',f:1200,f2:120,a:.002});osc('sine',150,t,.3,.5,{f2:48});noise(t+.02,.35,.22,{type:'highpass',f:3500,a:.004});sfx.sparkle(8,1700);duck(.45,900)},
   hearts(){sfx.sparkle(6,1700);sfx.whoosh(.9,600,4000)},
 };
 for(const k of Object.keys(sfx)){const f=sfx[k];sfx[k]=(...a)=>{if(!ac||muted)return;try{f(...a)}catch(e){console.warn('sfx '+k+': '+e.message)}}}
@@ -516,9 +528,9 @@ const MEL=[[0,76,2],[2,79,2],[4,76,2],[6,72,2],[8,74,2],[10,76,2],[12,79,4],
   [32,77,2],[34,81,2],[36,77,2],[38,74,2],[40,72,2],[42,74,2],[44,77,4],
   [48,79,2],[50,83,2],[52,79,2],[54,74,2],[56,79,6],[62,76,2]];
 const MOODS={
-  hush:{bpm:72,pad:.9,mel:0,bass:0,kick:0,hat:0,arp:0,clap:0},
-  calm:{bpm:78,pad:.6,mel:.6,half:true,bass:0,kick:0,hat:0,arp:0,clap:0},
-  play:{bpm:100,pad:.4,mel:.8,bass:.5,kick:0,hat:.5,arp:.3,clap:0},
+  hush:{bpm:72,pad:1,mel:.4,half:true,bass:.35,kick:0,hat:0,arp:.2,clap:0},
+  calm:{bpm:80,pad:.7,mel:.7,bass:.4,kick:0,hat:0,arp:.3,clap:0},
+  play:{bpm:100,pad:.45,mel:.85,bass:.55,kick:.25,hat:.5,arp:.4,clap:0},
   epic:{bpm:116,pad:.4,mel:.85,bass:.7,kick:.7,hat:.6,arp:.5,clap:.6},
   party:{bpm:122,pad:.35,mel:.95,bass:.75,kick:.8,hat:.7,arp:.6,clap:.7},
 };
@@ -526,13 +538,13 @@ const MUSIC={mood:null,timer:null,step:0,next:0};
 function setMood(name){
   MUSIC.mood=name;
   if(!ac||MUSIC.timer)return;
-  MUSIC.timer=setInterval(musicTick,25);
+  MUSIC.timer=setInterval(musicTick,40);
 }
 function musicTick(){
   if(!ac||musicFile||!MUSIC.mood||paused||muted)return;
   const m=MOODS[MUSIC.mood],sd=60/m.bpm/4;
   if(MUSIC.next<T0()-.2)MUSIC.next=T0()+.05;
-  while(MUSIC.next<T0()+.15){
+  while(MUSIC.next<T0()+.45){
     scheduleStep(MUSIC.step%64,MUSIC.next,m,sd);
     MUSIC.next+=sd;MUSIC.step++;
   }
@@ -582,7 +594,17 @@ function captureFace(){
 /* ---------- ảnh các bạn nam thành sticker meme ---------- */
 function loadImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src})}
 async function listDir(dir){
-  try{const r=await fetch('/api/list?dir='+encodeURIComponent(dir));if(!r.ok)return[];return await r.json()}catch(e){return[]}
+  try{const r=await fetch('/api/list?dir='+encodeURIComponent(dir));if(r.ok){const a=await r.json();if(a.length)return a}}catch(e){}
+  try{   // máy chủ khác (Live Server...): đọc trang liệt kê thư mục
+    const r=await fetch(dir+'/');if(!r.ok)return[];
+    const html=await r.text(),out=[],re=/href="([^"?#]+)"/gi;let m;
+    while((m=re.exec(html))){
+      let name=m[1];try{name=decodeURIComponent(name)}catch(e){}
+      name=name.split('/').filter(Boolean).pop()||'';
+      if(/\.(jpe?g|png|webp|gif)$/i.test(name)&&!out.includes(name))out.push(name);
+    }
+    return out.sort();
+  }catch(e){return[]}
 }
 function finishFace(c,g){g.lineWidth=10;g.strokeStyle='#fff';g.beginPath();g.arc(128,128,123,0,6.2832);g.stroke();return c}
 function emojiFace(ch){
@@ -617,6 +639,7 @@ async function loadMemes(){
 const meme=i=>memes[((i%memes.length)+memes.length)%memes.length];
 const memeBy=key=>memes.find(m=>m.key===key)||pick(memes);
 const faceTag=(key,cls='bi')=>`<img class="${cls}" src="${memeBy(key).url}">`;
+const randFaceTag=(cls='bi')=>`<img class="${cls}" src="${pick(memes).url}">`;
 function popMeme(x,y,{size=230,cap,life=3200,tilt,key}={}){
   const m=key?memeBy(key):pick(memes);
   const d=document.createElement('div');d.className='mp';d.style.left=x+'px';d.style.top=y+'px';
@@ -812,7 +835,7 @@ async function saveCard(name,fc,spc,wish){
     g.drawImage(fc,230,110,620,620);
     const gold=g.createLinearGradient(0,790,0,900);gold.addColorStop(0,'#fff3c4');gold.addColorStop(.5,'#ffd98a');gold.addColorStop(1,'#ffab3d');
     g.fillStyle=gold;g.font='700 128px "Dancing Script",cursive';g.fillText(name,540,880);
-    g.fillStyle='#ffd98a';g.font='700 50px "Playfair Display",serif';g.fillText(`${spc.e} ${spc.name}`,540,955);
+    g.fillStyle='#ffd98a';g.font='700 50px "Playfair Display",serif';const nw=g.measureText(spc.name).width,fc2=pick(memes).face;g.fillText(spc.name,574,955);g.drawImage(fc2,574-nw/2-76,903,64,64);
     g.fillStyle='#e8defa';g.font='italic 500 32px "Playfair Display",serif';
     const tl=wrapText(g,`“${spc.trait}”`,540,1008,860,42);
     const top=1008+tl*42+8;
@@ -885,6 +908,8 @@ function drawTug(t){
   cx.fillStyle=gg;cx.fillRect(0,ground-20,W,H);
   cx.fillStyle='rgba(255,255,255,.07)';for(let i=0;i<12;i++)cx.fillRect(i*160,ground-20,80,H);
   cx.strokeStyle='#fff';cx.lineWidth=6;cx.setLineDash([22,16]);cx.beginPath();cx.moveTo(960,ground-20);cx.lineTo(960,H);cx.stroke();cx.setLineDash([]);
+  if(!T.field){const im=fxFlw();T.field=Array.from({length:30},(_,i)=>({x:(i+.5)/30*W+rnd(-20,20),y:ground+rnd(20,200),s:rnd(44,90),img:pick(im),ph:rnd(0,6.28)}))}
+  for(const o of T.field){const sw=Math.sin(t*1.3+o.ph)*5;cx.strokeStyle='#2f8f58';cx.lineWidth=5;cx.beginPath();cx.moveTo(o.x,o.y+o.s*.5);cx.lineTo(o.x+sw,o.y);cx.stroke();cx.drawImage(o.img,o.x+sw-o.s/2,o.y-o.s/2,o.s,o.s)}
   const base=T.shift+Math.sin(t*1.7)*T.osc,nl=T.men.length,nr=T.flw.length;
   const mx=i=>820+base-i*165-T.fall*80,fx=j=>1110+base+j*150;
   const manL=i=>-(.2+.12*T.strain)+Math.sin(t*9+i*1.3)*.035*T.strain-T.fall*1.3;
@@ -918,7 +943,7 @@ function drawTug(t){
     limb(sh[0],sh[1],hand[0],hand[1],'#f1c9a0',20,18);
     cx.fillStyle='#f1c9a0';cx.beginPath();cx.arc(hand[0],hand[1],15,0,6.283);cx.fill();
     const hd=wpt(x,ground+yb,l,0,-324);
-    cx.save();cx.translate(hd[0],hd[1]);cx.rotate(l);cx.shadowColor='#0008';cx.shadowBlur=14;cx.drawImage(T.men[i],-68,-68,136,136);cx.restore();
+    cx.save();cx.translate(hd[0],hd[1]);cx.rotate(l);if(Q.shadow){cx.shadowColor='#0008';cx.shadowBlur=14}cx.drawImage(T.men[i],-68,-68,136,136);cx.restore();
     if(T.strain>.3&&T.snap<.02&&((t*3+i)%2)<1){cx.fillStyle='#7fd0ff';cx.beginPath();cx.moveTo(hd[0]-96,hd[1]-64);cx.quadraticCurveTo(hd[0]-74,hd[1]-24,hd[0]-96,hd[1]-8);cx.quadraticCurveTo(hd[0]-118,hd[1]-24,hd[0]-96,hd[1]-64);cx.fill()}
   }
   // các bông hoa
@@ -932,7 +957,7 @@ function drawTug(t){
     const hand=T.cheer?[sh[0]+(j%2?60:-60),sh[1]-100]:handR(j);
     limb(sh[0],sh[1],hand[0],hand[1],'#3fae6b',14,16);
     const hd=wpt(x,ground+yo,l,0,-310);
-    cx.save();cx.translate(hd[0],hd[1]);cx.rotate(l);cx.shadowColor='#ffd98a99';cx.shadowBlur=20;cx.drawImage(T.flw[j],-100,-100,200,200);cx.restore();
+    cx.save();cx.translate(hd[0],hd[1]);cx.rotate(l);if(Q.shadow){cx.shadowColor='#ffd98a99';cx.shadowBlur=20}cx.drawImage(T.flw[j],-100,-100,200,200);cx.restore();
   }
   cx.restore();
 }
@@ -945,7 +970,7 @@ function buildDream(){
   const defs=[{g:690,n:80,s:[44,66],st:[1,1.8],c1:'#a6e0b0',c2:'#7cc994',amp:12,sp:.55,al:.8},
               {g:800,n:56,s:[78,118],st:[1,1.7],c1:'#7fd196',c2:'#55b377',amp:16,sp:.7,al:.92},
               {g:915,n:36,s:[130,180],st:[.9,1.5],c1:'#5bbd7c',c2:'#2f8f58',amp:20,sp:.85,al:1}];
-  D.layers=defs.map((d,k)=>({...d,k,fl:Array.from({length:d.n},()=>{
+  D.layers=defs.map((d,k)=>({...d,k,fl:Array.from({length:Math.round(d.n*[.5,.75,1][Q.lvl]*1.5)},()=>{
     const s=rnd(d.s[0],d.s[1]);
     return{x:rnd(-40,W+40),s,len:s*rnd(d.st[0],d.st[1]),sp:pick(D.spr),ph:rnd(0,6.28),g:d.g+rnd(-20,70)};
   }).sort((a,b)=>a.g-b.g)}));
@@ -964,6 +989,14 @@ function layoutDream(){
     f.dx=140+sp2*(c+.5)+(rows>1?(r?sp2*.25:-sp2*.25):0);
     f.dy=rows===1?800:(r?860:700);f.ds=size;f.pop=0;
   });
+}
+function bouquetCanvas(){
+  const c=document.createElement('canvas');c.width=1200;c.height=640;const g=c.getContext('2d');
+  const fl=[['bq1',SPECIES[1],600,250,400],['bq2',SPECIES[0],300,350,310],['bq3',SPECIES[10],900,350,310],['bq4',SPECIES[4],440,150,240],['bq5',SPECIES[3],760,150,240],['bq6',SPECIES[7],150,430,200],['bq7',SPECIES[11],1050,430,200]];
+  g.strokeStyle='#3fae6b';g.lineWidth=16;g.lineCap='round';
+  fl.forEach(([n,sp_,x,y,sz])=>{g.beginPath();g.moveTo(x,y+sz*.3);g.quadraticCurveTo(x+(600-x)*.15,(y+640)/2,600,640);g.stroke()});
+  fl.forEach(([n,sp_,x,y,sz])=>g.drawImage(makeFlower(n,null,sp_),x-sz/2,y-sz/2,sz,sz));
+  return c;
 }
 function heartPath(x,y,s){
   cx.beginPath();cx.moveTo(x,y+s*.3);cx.bezierCurveTo(x,y,x-s*.5,y,x-s*.5,y+s*.3);cx.bezierCurveTo(x-s*.5,y+s*.6,x,y+s*.75,x,y+s);
@@ -1003,7 +1036,7 @@ function drawDream(t,f){
     cx.beginPath();cx.moveTo(it.dx,H+20);cx.quadraticCurveTo(it.dx-sw*.4,(hy+H)/2,hx,hy+s*.3);cx.stroke();
     cx.fillStyle='#4cc47c';cx.beginPath();cx.ellipse(it.dx-s*.2,(hy+H)/2+s*.2,s*.2,s*.08,-.5,0,6.283);cx.ellipse(it.dx+s*.2,(hy+H)/2+s*.45,s*.2,s*.08,.5,0,6.283);cx.fill();
     cx.save();cx.translate(hx,hy);cx.rotate(sw*.006+easeOut(1-it.spin)*it.spin*0+(it.spin>0?(1-it.spin)*6.283:0));
-    cx.shadowColor='#ff8fb8aa';cx.shadowBlur=26;cx.drawImage(it.cv,-s/2,-s/2,s,s);cx.restore();
+    if(Q.shadow){cx.shadowColor='#ff8fb8aa';cx.shadowBlur=26}cx.drawImage(it.cv,-s/2,-s/2,s,s);cx.restore();
     cx.shadowBlur=0;cx.font='700 34px "Be Vietnam Pro",sans-serif';cx.textAlign='center';cx.fillStyle='#fff';cx.strokeStyle='#d6458a';cx.lineWidth=7;cx.lineJoin='round';
     cx.strokeText(it.name,hx,hy+s/2+40);cx.fillText(it.name,hx,hy+s/2+40);
   }
@@ -1044,8 +1077,131 @@ function drawDream(t,f){
   cx.restore();
 }
 
+/* ---------- chất lượng: tự giảm hiệu ứng khi máy giật (phím Q để đổi tay) ---------- */
+const Q={lvl:2,ema:16.7,bad:0,n:N,cap:900,shadow:true,mul:1};
+function setQuality(l,auto){
+  Q.lvl=l;Q.n=[3500,6000,N][l];Q.cap=[260,520,900][l];Q.shadow=l>=2;Q.mul=[.4,.7,1][l];Q.bad=0;Q.ema=16.7;
+  toast((auto?'Máy hơi chậm, chuyển sang chế độ ':'Chế độ ')+['nhẹ','vừa','đẹp'][l]);
+}
+
+/* ---------- hiệu ứng nổi bật phần mở đầu: hoa phun, meme bay nhảy, đèn pha, pháo giấy ---------- */
+const fxc=$('fxc'),fxx=fxc.getContext('2d');
+const FX={items:[],spot:0,spotT:0,orbit:[],orbA:0,orbT:0,flw:null,dirty:false,tick:0,rainOn:false,rainAcc:0,urls:null};
+const CONF=['#ff6fa5','#ffd24d','#7fd6ff','#b79cff','#7dffb3','#ffffff','#ff9a4d'];
+function fxFlw(){
+  if(!FX.flw)FX.flw=Array.from({length:14},(_,i)=>{
+    const src=makeFlower('fx'+i,null,SPECIES[i%SPECIES.length]),c=document.createElement('canvas');
+    c.width=c.height=160;c.getContext('2d').drawImage(src,0,0,160,160);return c;
+  });
+  return FX.flw;
+}
+function fxAdd(o){if(FX.items.length<Q.cap)FX.items.push(Object.assign({x:0,y:0,vx:0,vy:0,g:0,rot:0,vr:0,s:100,life:3,max:3,drag:1,kind:'img',fade:true},o))}
+function fxFlowers(x,y,n,{dir=0,radial=false,speed=1}={}){
+  const imgs=fxFlw();n=Math.max(1,Math.round(n*Q.mul));
+  for(let i=0;i<n;i++){
+    let vx,vy;
+    if(radial){const a=rnd(0,6.283),sp=rnd(7,15)*speed;vx=Math.cos(a)*sp;vy=Math.sin(a)*sp}
+    else{const a=-Math.PI/2+(dir?dir*rnd(.1,.9):rnd(-.9,.9)),sp=rnd(16,30)*speed;vx=Math.cos(a)*sp;vy=Math.sin(a)*sp}
+    fxAdd({img:pick(imgs),x,y,vx,vy,g:radial?.07:.55,rot:rnd(0,6.28),vr:rnd(-.15,.15),s:rnd(60,130),life:rnd(3,5),drag:.992});
+  }
+}
+function fxConfetti(x,y,n,dir=0){
+  n=Math.max(1,Math.round(n*Q.mul));
+  for(let i=0;i<n;i++){
+    const a=-Math.PI/2+(dir?dir*rnd(.05,1):rnd(-1,1)),sp=rnd(12,34);
+    fxAdd({kind:'rect',color:pick(CONF),x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,g:.32,drag:.985,rot:rnd(0,6.28),vr:rnd(-.3,.3),w:rnd(8,16),h:rnd(14,26),life:rnd(3,6)});
+  }
+}
+function memeParade(){
+  if(!memes.length)return;
+  const K=Math.min(5,memes.length);
+  (async()=>{
+    for(let w=0;w<2;w++)for(let i=0;i<K;i++){
+      const dir=w?-1:1;
+      fxAdd({img:meme(i+w*2).face,x:dir>0?-130:W+130,y:H-190,vx:dir*rnd(6.5,9),vy:-rnd(18,24),g:.7,bounce:.9,floor:H-170,vr:dir*.045,s:rnd(180,230),life:10,fade:false,trail:true});
+      sfx.pop(rnd(.8,1.2));await sleep(420);
+    }
+  })();
+}
+function orbitMemes(on){
+  if(on&&!FX.orbit.length&&memes.length){const K=Math.min(5,memes.length);FX.orbit=Array.from({length:K},(_,i)=>({m:meme(i),a:i/K*6.283,sp:.55+i*.03}))}
+  FX.orbT=on?1:0;
+}
+function bigFlash(){const e=$('bigflash');e.style.transition='none';e.style.opacity=.85;void e.offsetWidth;e.style.transition='opacity 1.3s';e.style.opacity=0}
+function letterIn(el,text){
+  el.innerHTML='';
+  [...text].forEach((ch,i)=>{const sp=document.createElement('span');sp.textContent=ch===' '?'\u00a0':ch;sp.className='lt2 gold';sp.style.animationDelay=(i*.07)+'s';el.appendChild(sp)});
+}
+function fxFrame(t,f){
+  FX.spot+=(FX.spotT-FX.spot)*.04;FX.orbA+=(FX.orbT-FX.orbA)*.05;
+  if(FX.rainOn&&!paused){
+    FX.rainAcc+=f*[.03,.06,.1][Q.lvl];
+    while(FX.rainAcc>=1){FX.rainAcc--;fxAdd({img:pick(fxFlw()),x:rnd(0,W),y:-70,vx:rnd(-.6,.6),vy:rnd(1.1,2.6),g:0,rot:rnd(0,6.28),vr:rnd(-.03,.03),s:rnd(34,72),life:16,sw:rnd(.3,1),ph:rnd(0,6.28),fade:false,alpha:.6})}
+  }
+  if(!FX.items.length&&FX.spot<.01&&FX.orbA<.01){if(FX.dirty){fxx.clearRect(0,0,W,H);FX.dirty=false}return}
+  FX.dirty=true;fxx.clearRect(0,0,W,H);
+  if(FX.spot>.01&&Q.lvl>0){
+    fxx.globalCompositeOperation='lighter';
+    const cols=['255,222,150','255,150,200','150,220,255','200,170,255'];
+    for(let k=0;k<4;k++){
+      const ox=240+k*480,ang=Math.PI/2+Math.sin(t*.8+k*1.7)*.55,len=1500,w=.15;
+      const g=fxx.createLinearGradient(ox,0,ox+Math.cos(ang)*len,Math.sin(ang)*len);
+      g.addColorStop(0,`rgba(${cols[k]},${.3*FX.spot})`);g.addColorStop(1,`rgba(${cols[k]},0)`);
+      fxx.fillStyle=g;fxx.beginPath();fxx.moveTo(ox,-20);
+      fxx.lineTo(ox+Math.cos(ang-w)*len,Math.sin(ang-w)*len);fxx.lineTo(ox+Math.cos(ang+w)*len,Math.sin(ang+w)*len);fxx.closePath();fxx.fill();
+    }
+  }
+  fxx.globalCompositeOperation='source-over';
+  const items=FX.items;
+  for(let i=items.length-1;i>=0;i--){
+    const it=items[i];
+    it.vy=(it.vy+it.g*f)*it.drag;it.vx*=it.drag;
+    it.x+=it.vx*f;it.y+=it.vy*f;it.rot+=it.vr*f;it.life-=f/60;if(it.sw)it.x+=Math.sin(t*1.5+it.ph)*it.sw*f;
+    if(it.bounce&&it.y>it.floor&&it.vy>0){it.y=it.floor;it.vy=-it.vy*it.bounce}
+    if(it.life<=0||it.y>H+400||it.x<-500||it.x>W+500){items.splice(i,1);continue}
+    if(it.trail&&(++FX.tick%2)===0)fxAdd({kind:'glow',x:it.x,y:it.y+it.s*.3,cr:255,cg:200+Math.random()*50|0,cb:140+Math.random()*100|0,s:rnd(30,60),life:.5});
+    fxx.globalAlpha=(it.alpha||1)*(it.fade?Math.min(1,it.life*1.1):1);
+    if(it.kind==='glow'){fxx.globalCompositeOperation='lighter';fxx.drawImage(sprite(it.cr,it.cg,it.cb),it.x-it.s/2,it.y-it.s/2,it.s,it.s);fxx.globalCompositeOperation='source-over';continue}
+    fxx.save();fxx.translate(it.x,it.y);fxx.rotate(it.rot);
+    if(it.kind==='rect'){fxx.fillStyle=it.color;fxx.scale(1,Math.cos(it.rot*3)*.9+.1);fxx.fillRect(-it.w/2,-it.h/2,it.w,it.h)}
+    else fxx.drawImage(it.img,-it.s/2,-it.s/2,it.s,it.s);
+    fxx.restore();
+  }
+  fxx.globalAlpha=1;
+  if(FX.orbA>.01&&FX.orbit.length){
+    FX.orbit.forEach((o,i)=>{
+      o.a+=o.sp*.016*f;
+      const x=W/2+Math.cos(o.a)*800,y=H/2+30+Math.sin(o.a)*400,s=190+36*Math.sin(t*2.2+i*1.3);
+      fxx.globalAlpha=FX.orbA;fxx.save();fxx.translate(x,y);fxx.rotate(Math.sin(t*1.8+i)*.28);
+      if(Q.shadow){fxx.shadowColor='#ffd98a';fxx.shadowBlur=30}fxx.drawImage(o.m.face,-s/2,-s/2,s,s);fxx.restore();
+      if(Math.random()<.5)fxAdd({kind:'glow',x,y,cr:255,cg:210,cb:150,s:rnd(30,56),life:.6});
+    });
+    fxx.globalAlpha=1;
+  }
+}
+
+/* ---------- viền hoa ở đáy màn hình ---------- */
+const FL={a:0,want:false,fl:null};
+function buildFL(){
+  const imgs=fxFlw(),cnt=[22,34,46][Q.lvl];
+  FL.fl=Array.from({length:cnt},(_,i)=>({x:(i+.5)/cnt*W+rnd(-24,24),s:rnd(70,160),lift:rnd(20,170),img:pick(imgs),ph:rnd(0,6.28),sp:rnd(.7,1.3)})).sort((a,b)=>a.s-b.s);
+}
+function drawFL(t,f){
+  const hide=(G.on&&G.items.length&&G.aT>.1)||T.aT>.1||D.aT>.1;
+  FL.a+=(((FL.want&&!hide)?1:0)-FL.a)*.06;
+  if(FL.a<.02)return;
+  if(!FL.fl)buildFL();
+  cx.globalCompositeOperation='source-over';cx.globalAlpha=FL.a;
+  for(const o of FL.fl){
+    const sw=Math.sin(t*o.sp+o.ph)*8,hx=o.x+sw,hy=H-o.lift-o.s*.2;
+    cx.strokeStyle='#2f8f58';cx.lineWidth=Math.max(3,o.s*.045);cx.lineCap='round';
+    cx.beginPath();cx.moveTo(o.x,H+10);cx.quadraticCurveTo(o.x-sw*.4,(hy+H)/2,hx,hy+o.s*.3);cx.stroke();
+    cx.save();cx.translate(hx,hy);cx.rotate(sw*.01);cx.drawImage(o.img,-o.s/2,-o.s/2,o.s,o.s);cx.restore();
+  }
+}
+
 /* ---------- vòng lặp vẽ ---------- */
-const cv=$('cv'),cx=cv.getContext('2d');
+const cv=$('cv'),cx=cv.getContext('2d',{alpha:false});
 const bgGrad=cx.createLinearGradient(0,0,0,H);
 bgGrad.addColorStop(0,'#03040f');bgGrad.addColorStop(.55,'#120c3a');bgGrad.addColorStop(1,'#4a1d5c');
 const stars=Array.from({length:260},()=>({x:Math.random()*W,y:Math.random()*H*.85,r:Math.random()*1.6+.5,s:Math.random()*2+.5,p:Math.random()*6.28}));
@@ -1054,6 +1210,7 @@ let lastNow=0;
 function frame(now){
   const t=now/1000,f=Math.min(4,lastNow?(now-lastNow)/16.67:1);
   lastNow=now;
+  {const dt=Math.min(100,f*16.67);Q.ema+=(dt-Q.ema)*.04;if(Q.ema>27&&Q.lvl>0){if(++Q.bad>150)setQuality(Q.lvl-1,true)}else Q.bad=0}
   cx.globalCompositeOperation='source-over';cx.globalAlpha=1;
   cx.fillStyle=bgGrad;cx.fillRect(0,0,W,H);
   cx.fillStyle='#fff';
@@ -1067,6 +1224,7 @@ function frame(now){
     cx.globalAlpha=.25+.5*(.5+.5*Math.sin(t*1.7+fl.p));cx.drawImage(fs,fl.x-9,fl.y-9,18,18);
   }
 
+  drawFL(t,f);
   D.a+=(D.aT-D.a)*.06;
   if(D.a>.01)drawDream(t,f);
 
@@ -1089,7 +1247,7 @@ function frame(now){
         cx.beginPath();cx.ellipse(it.x+sc*.16,my+sc*.12,sc*.17,sc*.07,.5,0,6.283);cx.fill();
       }
       cx.save();cx.translate(hx,hy);cx.rotate(sw*.06);
-      cx.shadowColor='#ffd98a88';cx.shadowBlur=G.stems?12:26;
+      if(Q.shadow){cx.shadowColor='#ffd98a88';cx.shadowBlur=G.stems?12:26}
       cx.drawImage(it.cv,-sc/2,-sc/2,sc,sc);cx.restore();
       if(G.labels){
         cx.shadowBlur=0;cx.font='600 34px "Be Vietnam Pro",sans-serif';cx.textAlign='center';cx.fillStyle='#fff';
@@ -1105,7 +1263,7 @@ function frame(now){
   if(P.alpha>.01){
     cx.globalCompositeOperation=P.comp;cx.globalAlpha=P.alpha;
     const sz=P.size,h=sz/2,nowP=performance.now(),kc=Math.min(1,.07*f);
-    for(let i=0;i<N;i++){
+    for(let i=0;i<Q.n;i++){
       if(P.free){px[i]+=vx[i]*f;py[i]+=vy[i]*f;vy[i]=vy[i]*.988+.2*f;vx[i]*=.988}
       else if(nowP>=dl[i]){const k=Math.min(1,sp[i]*f);px[i]+=(tx[i]-px[i])*k;py[i]+=(ty[i]-py[i])*k}
       cr[i]+=(tr[i]-cr[i])*kc;cg[i]+=(tg[i]-cg[i])*kc;cb[i]+=(tb[i]-cb[i])*kc;
@@ -1126,6 +1284,7 @@ function frame(now){
     if(p.life<=0){fwp.splice(i,1);continue}
     cx.globalAlpha=p.life*fwAlpha;cx.drawImage(sprite(p.r,p.g,p.b),p.x-p.s,p.y-p.s,p.s*2,p.s*2);
   }
+  fxFrame(t,f);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
@@ -1147,7 +1306,7 @@ function setCurtain(p){
 }
 function cbub(txt,key){const b=$('cBub');b.style.opacity=txt?1:0;if(txt)b.innerHTML=(key?faceTag(key):'')+txt}
 async function sceneCurtain(){
-  skip=false;setCurtain(0);
+  skip=false;setCurtain(0);$('cH1').innerHTML='';
   const t=$('cText');t.style.opacity=0;t.style.transition='opacity 1.4s';
   const mk=(el,a,b)=>{el.querySelector('.cmi').innerHTML='';[a,b].forEach(m=>{const i=document.createElement('img');i.src=m.url;el.querySelector('.cmi').appendChild(i)})};
   mk($('cMenL'),meme(0),meme(1));mk($('cMenR'),meme(2),meme(3));
@@ -1162,8 +1321,19 @@ async function sceneCurtain(){
   launch();
   await tweenFn(0,1,3000,v=>{setCurtain(v);if(v>.3)t.style.opacity=1},easeOut);
   $('cMenL').classList.remove('strain');$('cMenR').classList.remove('strain');
-  cbub('');sfx.tada();sfx.applause(4,.28);setMood('party');launch();await wait(300);launch();
-  await wait(7500);setMood('calm');
+  cbub('');sfx.tada();sfx.applause(4,.28);setMood('party');
+  letterIn($('cH1'),'Gia đình Sư Phạm');grandReveal();
+  await wait(10500);setMood('calm');
+}
+
+async function grandReveal(){
+  FX.spotT=1;bigFlash();sfx.cannon();
+  FL.want=true;FX.rainOn=true;fxConfetti(0,H*.92,130,1);fxConfetti(W,H*.92,130,-1);fxFlowers(100,H+20,44,{dir:1});fxFlowers(W-100,H+20,44,{dir:-1});
+  memeParade();
+  for(let k=0;k<7;k++){
+    await sleep(600);sfx.cannon();
+    fxFlowers(rnd(200,W-200),H+20,26);fxConfetti(k%2?0:W,H*.9,70,k%2?1:-1);launch();
+  }
 }
 
 /* ============ MỞ ĐẦU: DRONE SHOW + ẢNH CHUNG ============ */
@@ -1173,12 +1343,24 @@ async function sceneDrone(){
   seedParticles(Array.from({length:40},(_,i)=>[i/39*W,H+60]));
   P.alpha=0;P.tAlpha=1;P.comp='lighter';P.size=9;
   on();
-  setMood('calm');sfx.riser(2.5);
-  const hold=async(sh,ms,comp='lighter',size=9)=>{P.comp=comp;P.size=size;setShape(sh);sfx.sparkle(10,1400);sfx.whoosh(1.4,400,3500);await wait(ms)};
-  await hold(textShape(['20/10'],560),5500);
-  await hold(emojiShape('💐'),4500,'source-over',10);
-  await hold(textShape(['Chúc mừng','Phụ nữ Việt Nam'],210),5200);
-  await hold(textShape(['Gia đình','Sư Phạm'],300),5200);
+  setMood('calm');sfx.riser(2.5);orbitMemes(true);
+  const hold=async(sh,ms,comp='lighter',size=9)=>{P.comp=comp;P.size=(sh.step&&comp==='source-over')?sh.step*1.3:size;setShape(sh);sfx.sparkle(10,1400);sfx.whoosh(1.4,400,3500);fxFlowers(W/2,H/2,22,{radial:true});await wait(ms)};
+  await hold(textShape(['20/10'],560),4800);
+  await hold(photoShape(bouquetCanvas())||textShape(['Hoa'],300),4000,'source-over',10);
+  await hold(photoShape(makeFlower('sun',null,SPECIES[0]))||textShape(['Hoa'],300),3600,'source-over',10);
+  await hold(textShape(['Chúc mừng','Phụ nữ Việt Nam'],210),4800);
+  await hold(textShape(['Gia đình','Sư Phạm'],300),4800);
+  // các bạn nam trình diện bằng đốm sáng
+  orbitMemes(false);
+  on('photoUI');show('phHead',false);
+  const intro=['Team nam xin trình diện!','Đẹp trai nhưng ngoan lắm ạ','Hôm nay chỉ phục vụ các chị em!'];
+  for(let i=0;i<Math.min(3,memes.length);i++){
+    const sh=photoShape(meme(i).face);if(!sh)break;
+    $('cap').textContent=intro[i];show('cap');
+    P.comp='source-over';P.size=sh.step*1.3;setShape(sh);sfx.pop(1);sfx.sparkle(8,1400);fxFlowers(W/2,H/2,12,{radial:true});
+    await wait(2800);show('cap',false);await wait(350);
+  }
+  on();orbitMemes(true);
 }
 async function scenePhotos(){
   skip=false;
@@ -1201,7 +1383,8 @@ async function scenePhotos(){
   }
   skip=false;
   setShape(textShape(['Cảm ơn','các chị em'],280));sfx.sparkle(12,1500);sfx.riser(3);await wait(3500);
-  explode();sfx.boom(0,1.3);sfx.crackle();sfx.sparkle(16,1600);await wait(1500);
+  explode();orbitMemes(false);FX.spotT=0;bigFlash();sfx.cannon();fxFlowers(W/2,H/2,40,{radial:true,speed:1.4});fxConfetti(W/2,H/2,120);
+  sfx.boom(0,1.3);sfx.crackle();sfx.sparkle(16,1600);await wait(1500);
 }
 
 /* ============ MÀN 1: HÔM NAY BẠN CÓ XINH KHÔNG ============ */
@@ -1220,11 +1403,15 @@ async function clickAt(x,y){
 }
 function place(el,x,y,s){el.style.left=x+'px';el.style.top=y+'px';if(s!==undefined)el.style.setProperty('--s',s)}
 function say(text,x,y,key){const b=$('noBub');b.innerHTML=(key?faceTag(key):'')+text;b.style.left=x+'px';b.style.top=(y-70)+'px';b.style.opacity=text?1:0}
+const HEART_SVG='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 29"><path fill="#ff6fa5" d="M16 28C5 20 0 14 0 8.5 0 3.5 3.8 0 8.3 0c3 0 5.9 1.7 7.7 4.3C17.8 1.7 20.700 0 23.700 0 28.200 0 32 3.500 32 8.500 32 14 27 20 16 28z"/></svg>');
+function flwUrl(){return(FX.urls||(FX.urls=fxFlw().map(c=>c.toDataURL())))[Math.random()*FX.urls.length|0]}
 function spawnHearts(x,y,n=34){
   for(let i=0;i<n;i++){
-    let h;
-    if(i%3===0&&memes.length){h=document.createElement('img');h.src=pick(memes).url;h.className='heart';const z=rnd(70,120);h.style.width=z+'px';h.style.height=z+'px';}
-    else{h=document.createElement('div');h.className='heart';h.textContent=['💗','💖','💕','🌸'][i%4];}
+    const h=document.createElement('img');h.className='heart';let z;
+    if(i%2===0&&memes.length){h.src=pick(memes).url;z=rnd(70,120)}
+    else if(i%4===1){h.src=flwUrl();z=rnd(60,110)}
+    else{h.src=HEART_SVG;z=rnd(50,90)}
+    h.style.width=z+'px';h.style.height=z+'px';
     h.style.left=(x+rnd(-80,80))+'px';h.style.top=(y+rnd(-30,30))+'px';
     h.style.setProperty('--dx',rnd(-380,380)+'px');h.style.setProperty('--r',rnd(-40,40)+'deg');
     h.style.animationDelay=rnd(0,.5)+'s';$('stage').appendChild(h);setTimeout(()=>h.remove(),3300);
@@ -1310,7 +1497,7 @@ const STATUS=['Đang nhận diện nụ cười…','Đang đo độ dễ thươ
 
 async function scanPerson(name){
   skip=false;
-  const el=ensureChip(name);el.classList.add('done');scanned.add(name);
+  const el=ensureChip(name);if(!el.classList.contains('done'))el.insertAdjacentHTML('afterbegin',randFaceTag('ci'));el.classList.add('done');scanned.add(name);
   G.aT=0;showPanel('scanPanel');
   $('scanName').textContent=name;$('camPH').style.display=camOK?'none':'flex';
   const box=$('metrics');box.innerHTML='';
@@ -1340,7 +1527,7 @@ async function scanPerson(name){
   const fc=makeFlower(name,face,spc);
   const rf=$('resFlower');rf.getContext('2d').clearRect(0,0,300,300);rf.getContext('2d').drawImage(fc,0,0);
   rf.className='';rf.style.transform='';
-  $('resName').textContent=name;$('resSp').textContent=`${spc.e} ${spc.name}`;
+  $('resName').textContent=name;$('resSp').innerHTML=randFaceTag('bi')+spc.name;
   $('resTrait').textContent=`“${spc.trait}”`;$('resWish').textContent=wish;
   showPanel('resPanel');void rf.offsetWidth;rf.classList.add('bloom');sfx.bloom();
   saveCard(name,fc,spc,wish);
@@ -1513,8 +1700,8 @@ function toggleDream(){
   if(!finalReady)return;
   buildDream();
   D.on=!D.on;D.aT=D.on?1:0;
-  if(D.on){setMood('calm');sfx.whoosh(1.2,300,3000);sfx.sparkle(14,1700);layoutDream();rainOn=false;on('dream');document.body.classList.remove('nocur');$('dreamBtn').textContent='⬅ Quay lại (B)'}
-  else{setMood('party');sfx.whoosh(.9,2500,300);on('fin3');rainOn=true;document.body.classList.add('nocur');$('dreamBtn').textContent='🌸 Vườn hoa mơ mộng (B)';$('dreamBub').style.opacity=0}
+  if(D.on){setMood('calm');sfx.whoosh(1.2,300,3000);sfx.sparkle(14,1700);layoutDream();rainOn=false;FX.rainOn=false;on('dream');document.body.classList.remove('nocur');$('dreamBtn').innerHTML=randFaceTag('bi')+'Quay lại (B)'}
+  else{setMood('party');sfx.whoosh(.9,2500,300);on('fin3');rainOn=true;FX.rainOn=true;document.body.classList.add('nocur');$('dreamBtn').innerHTML=randFaceTag('bi')+'Vườn hoa mơ mộng (B)';$('dreamBub').style.opacity=0}
 }
 $('dreamBtn').onclick=e=>{e.stopPropagation();toggleDream()};
 $('stage').addEventListener('click',e=>{
@@ -1541,10 +1728,13 @@ function fakeGarden(n){
 async function run(){
   $('start').classList.remove('on');
   await loadMemes();
+  $('camPH').innerHTML=randFaceTag('cph');$('dreamBtn').innerHTML=randFaceTag('bi')+'Vườn hoa mơ mộng (B)';
+  if(params.get('jump')&&params.get('jump')!=='curtain'){FL.want=true;FX.rainOn=true}
   if(params.has('sfxtest')){await sleep(800);for(const k of Object.keys(sfx))sfx[k]();for(const m of Object.keys(MOODS)){setMood(m);await sleep(600)}console.warn('SFXTEST DONE ac='+(ac?ac.state:'null')+' mood='+MUSIC.mood+' step='+MUSIC.step);return}
   const jump=params.get('jump');
   if(jump){
     if(jump==='curtain'){await sceneCurtain();return}
+    if(jump==='drone'){await sceneDrone();await scenePhotos();return}
     if(jump==='q'){await sceneQuestion();return}
     if(jump==='scan'){await sceneScan();await sceneTug();await sceneFinale();return}
     if(jump==='tug'){fakeGarden(6);G.on=true;await sceneTug();return}
@@ -1581,6 +1771,7 @@ addEventListener('keydown',e=>{
   if(k==='f')document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
   if(k==='n'&&!pickResolve)skip=true;
   if(k==='c')nextCamera();
+  if(k==='q')setQuality((Q.lvl+2)%3);
   if(k==='m')toggleMute();
   if(e.key==='+'||e.key==='=')changeVolume(.1);
   if(e.key==='-'||e.key==='_')changeVolume(-.1);
